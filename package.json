@@ -1,0 +1,25 @@
+{
+  "name": "image-resizer",
+  "productName": "Image Resizer",
+  "version": "1.0.0",
+  "description": "Resize Image Dimensions",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Guilherme-G-Cadilhe/Image-Resizer.git"
+  },
+  "author": "Guilherme G Cadilhe ( Bobnini )",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Guilherme-G-Cadilhe/Image-Resizer/issues"
+  },
+  "homepage": "https://github.com/Guilherme-G-Cadilhe/Image-Resizer#readme",
+  "dependencies": {
+    "electron": "^25.3.0",
+    "resize-img": "^2.0.0",
+    "toastify-js": "^1.12.0"
+  }
+}
