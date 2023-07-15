@@ -3,19 +3,28 @@
  * - "npx electronmon ."
  */
 
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, shell } = require('electron');
 const path = require('path');
+const os = require('os');
+const { resizeImage } = require('./helper');
 
 const isDev = process.env.NODE_ENV !== 'production';
 const isMac = process.platform === 'darwin'
+let mainWindow = null;
 
 
 
 function createMainWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     title: 'Image Resizer', // Name of App
     width: isDev ? 1000 : 500,
     height: 600,
+    // ENABLING NODE FEATURES
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
   });
 
   // Open DevTools if in DEV Env
@@ -73,6 +82,9 @@ app.whenReady().then(() => {
   const mainMenu = Menu.buildFromTemplate(menuWithRole)
   Menu.setApplicationMenu(mainMenu);
 
+  // Remove MainWindow from memory on close
+  mainWindow.on('closed', () => mainWindow = null)
+
   // If window didnt load properly
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -80,6 +92,22 @@ app.whenReady().then(() => {
     }
   })
 });
+
+// Communicate back and forth between Renderer
+ipcMain.on('image:resize', (e, options) => {
+  options.destination = path.join(os.homedir(), 'imageResizer')
+  options.fileName = path.basename(options.imgPath)
+  resizeImage(options).then(() => {
+
+    // Send event string named image:done
+    mainWindow.webContents.send('image:done')
+
+    shell.openPath(options.destination)
+  });
+
+
+})
+
 
 
 
